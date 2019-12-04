@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Chat Room</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+		<script src="//code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+	
+	
+		
+		
+		
+	</head>
+    <body>
+		<script>
+	document.addEventListener('DOMContentLoaded', () => {
+	
+	namespace = '/test';
+
+
+	var socket = io(namespace);
+	
+	const name = {{name|tojson}};
+	const chatName = {{chatName|tojson}};
+	
+	socket.on('connect', function() {
+		
+		//testing purposes alone
+		//alert("we are connecting")
+		
+		
+		localStorage.setItem('lastChat', chatName);
+		
+	
+		
+		document.querySelector('#submit').onclick = () => {
+			
+			//get the value of what is inside the text box
+			
+			if(document.querySelector("#text").value.length != 0)
+			{
+				const theText = document.querySelector('#text').value;
+			
+				const text = name + ": " + theText;
+			
+				//for testing purposes only
+				//alert(text);
+				
+				var list = document.querySelector("#votes");
+				let listLi = list.getElementsByTagName("li");
+				var listLength = listLi.length;
+				
+				if(listLength == 100)
+				{
+					alert("you have reached the limit of texts in this chat");
+				}
+				else
+				{
+					socket.emit('announce', {text: text, chat: chatName});
+				}
+				
+				
+				return false;
+			}
+			return false;
+			
+			
+		};
+		return false;
+	});
+	
+	
+	socket.on('announce text', function(msg) {
+		
+		// places the text on the screen
+		const li = document.createElement('li');
+		li.innerHTML = msg.text;
+		document.querySelector('#votes').append(li);
+		document.querySelector("#text").value = ''; 
+		
+		
+		
+		
+		return false;
+	
+	
+	
+	});
+	
+	
+	
+	
+		
+		
+	
+	});
+
+	
+
+		</script>
+	
+	
+	
+	
+	<h1>{{chatName}}</h1>
+        <div class="container">
+            
+			
+			<ul id="votes">
+			{% for text in listOfTextsInChats %}
+				<li>{{text}}</li>
+			{% endfor %}
+			
+			</ul>
+
+			
+			<form id="field">
+			
+			<input id="text" autocomplete="off" autofocus placeholder="Type Here" type="text">
+			
+			<button id="submit">Submit</button>
+			
+			</form>
+        </div>
+    </body>
+</html>
